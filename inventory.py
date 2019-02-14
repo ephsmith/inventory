@@ -13,7 +13,8 @@ class Warehouse():
         self.DIMZ = dimz
         self.NUMBINS = dimx * dimy * dimz
         self.inventory = Counter()
-        self.bins = ['-' for k in range(self.NUMBINS)]
+        self.bins = [['-' for k in range(dimx * dimy)]
+                     for z in range(dimz)]
 
     def xyz_to_index(self, x, y, z):
         """ return the bin index for coord (x,y,z) """
