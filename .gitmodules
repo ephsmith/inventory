@@ -1,0 +1,3 @@
+[submodule "pycomm"]
+	path = pycomm
+	url = git@github.com:ruscito/pycomm.git
