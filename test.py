@@ -1,6 +1,6 @@
-from inventory import Warehouse
+from inventory import Inventory
 
-w = Warehouse()
+w = Inventory()
 for c in 'aaaaaabbbbbbccccccffffff':
     w.place(c)
 

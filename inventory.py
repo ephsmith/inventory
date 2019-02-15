@@ -3,9 +3,9 @@ from collections import Counter
 from tabulate import tabulate
 
 
-class Warehouse():
+class Inventory():
     """
-    Warehouse: class to organize inventory and inventory access methods
+    Inventory: class to organize inventory and inventory access methods
     """
     def __init__(self, dimx=16, dimy=5, dimz=2):
         self.DIMX = dimx
@@ -145,6 +145,6 @@ class Warehouse():
 
 
 # TEST
-# w = Warehouse()
+# w = Inventory()
 # for c in 'abcasdflkajsdfoiahsdfoiauhwerljakhsdflkjahetoihasdf':
 #     w.place(c)

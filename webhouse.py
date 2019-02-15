@@ -9,13 +9,14 @@ app = Flask(__name__)
 @app.route('/', methods=['POST', 'GET'])
 def inventory_app():
     last_op = 'place'
+    w = inventory.Inventory(dimx=15)
     if request.method == 'POST':
         if request.form['operation'] == 'pick':
-            inventory.w.pick(request.form['character'])
+            w.pick(request.form['character'])
         if request.form['operation'] == 'place':
-            inventory.w.place(request.form['character'])
+            w.place(request.form['character'])
         last_op = request.form['operation']
-    inv = inventory.w.inventory
+    inv = w.inventory
     stock = [(k, inv[k]) for k in sorted(inv)]
     return render_template('index.html',
                            stock=stock,
