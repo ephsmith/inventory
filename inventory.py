@@ -16,6 +16,16 @@ class Warehouse():
         self.bins = [['-' for k in range(dimx * dimy)]
                      for z in range(dimz)]
 
+    def xy_to_index(self, x, y):
+        """ return the bin index for coord (x,y) """
+        return np.ravel_multi_index([x, y],
+                                    [self.DIMX, self.DIMY])
+
+    def index_to_xy(self, idx):
+        """ return the x,y coord for the linear index idx"""
+        return np.unravel_index(idx,
+                                [self.DIMX, self.DIMY])
+
     def xyz_to_index(self, x, y, z):
         """ return the bin index for coord (x,y,z) """
         return np.ravel_multi_index([x, y, z],
@@ -26,6 +36,56 @@ class Warehouse():
         return np.unravel_index(idx,
                                 [self.DIMX, self.DIMY, self.DIMZ])
 
+    def find_empty(self, c):
+        """
+        find the first empty bin for character c with the priority
+        that like like items be stored at a higher z-depth.
+
+        Fill priority is low to high
+        """
+        indices = []
+        zloc = None
+        index = None
+        # is c in the inventory?
+        if self.inventory[c] > 0:
+
+            # find c at z depth 0 first
+            for z in range(self.DIMZ-1):
+                indices = [k for k, x in enumerate(self.bins[z])
+                           if x == c and self.bins[z+1][k] == '-']
+                if len(indices) > 0:
+                    index = indices[0]
+                    zloc = z + 1
+                    print('Found loc: index = {}, zloc = {}'.format(index,zloc))
+                    return zloc, index
+        if zloc is None and index is None:
+            try:
+                index = self.bins[0].index('-')
+                zloc = 0
+            except ValueError:
+                index = None
+                zloc = None
+        return zloc, index
+
+    def find_top(self, c):
+        """
+        find the topmost character c
+        """
+        zloc = None
+        index = None
+        # is c in the inventory?
+        if self.inventory[c] > 0:
+
+            # find c at z depth 0 first
+            for z in reversed(range(self.DIMZ)):
+                indices = [k for k, x in enumerate(self.bins[z])
+                           if x == c]
+                if len(indices) > 0:
+                    index = indices[0]
+                    zloc = z
+                    break
+        return zloc, index
+
     def place(self, c):
         """
         Add character c to the inventory and find the first
@@ -33,14 +93,13 @@ class Warehouse():
 
         Return None if unsuccessful
         """
-        try:
-            index = self.bins.index('-')
-        except ValueError:
-            return None         # no room left
+        z, index = self.find_empty(c)
 
-        self.bins.insert(index, c)
-        self.inventory.update(c)
-        return self.index_to_xyz(index)
+        if z is not None and index is not None:
+            self.bins[z].insert(index, c)
+            self.inventory.update(c)
+            xy = self.index_to_xy(index)
+            return (xy[0], xy[1], z)
 
     def pick(self, c):
         """
@@ -52,14 +111,12 @@ class Warehouse():
         if self.inventory[c] == 0:
             return None
 
-        try:
-            index = self.bins.index(c)
-        except ValueError:
-            return None
+        z, index = self.find_top(c)
 
-        self.bins[index] = '-'
+        self.bins[z][index] = '-'
         self.inventory.subtract(c)
-        return self.index_to_xyz(index)
+        xy = self.index_to_xy(index)
+        return (xy[0], xy[1], z)
 
     def count(self, c):
         """ Return the number of c's in inventory"""
@@ -73,7 +130,8 @@ class Warehouse():
         rowids = [y for y in range(self.DIMY)]
         for z in range(self.DIMZ):
             print("\nZ = {}".format(z))
-            rows = [[self.bins[self.xyz_to_index(x, y, z)] for x in range(self.DIMX)] for y in range(self.DIMY)]
+            rows = [[self.bins[z][self.xy_to_index(x, y)]
+                     for x in range(self.DIMX)] for y in range(self.DIMY)]
             print(tabulate(rows, headers=header,
                            showindex=rowids, tablefmt="fancy_grid"))
 
