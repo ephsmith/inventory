@@ -91,7 +91,9 @@ class Controller(Inventory):
         """
         Loop until Done bit is set
         """
-        while not self.done:
+        while True:
+            if self.read_tag(DONE):
+                break
             sleep(0.1)
 
     def place(self, c):
