@@ -9,7 +9,7 @@ app = Flask(__name__)
 @app.route('/', methods=['POST', 'GET'])
 def inventory_app():
     last_op = 'place'
-    w = plc.Inventory(dimx=15)
+    w = plc.Controller()
     if request.method == 'POST':
         if request.form['operation'] == 'pick':
             w.pick(request.form['character'])
