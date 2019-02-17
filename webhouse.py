@@ -5,16 +5,17 @@ import plc
 
 app = Flask(__name__)
 
+w = plc.Controller()
 
 @app.route('/', methods=['POST', 'GET'])
 def inventory_app():
     last_op = 'place'
-    w = plc.Controller()
+
     if request.method == 'POST':
         if request.form['operation'] == 'pick':
-            w.pick(request.form['character'])
+            w.pick(request.form['character'].encode('ascii', 'ignore'))
         if request.form['operation'] == 'place':
-            w.place(request.form['character'])
+            w.place(request.form['character'].encode('ascii', 'ignore'))
         last_op = request.form['operation']
     inv = w.inventory
     stock = [(k, inv[k]) for k in sorted(inv)]
