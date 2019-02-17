@@ -14,9 +14,15 @@ YLoc:         N7:11
 """
 
 BITFIELD = 'B3:7'
-DONE = 0x08
 XLOC = 'N7:10'
 YLOC = 'N7:11'
+ZLOC = 'B3:7/2'
+
+START = 'B3:7/0'
+PICK_PLACE = 'B3:7/1'
+DONE = 'B3:7/3'
+PICK = 1
+PLACE = 0
 
 
 class ConnectionException(Exception):
@@ -70,22 +76,54 @@ class Controller(Inventory):
         except ConnectionException as e:
             print(e.msg)
 
+        self.write_tag = self.plc.write_tag
+        self.read_tag = self.plc.read_tag
+
         self.done_thread = Thread(target=self.check_done)
         self.done_thread.start()
+
+    def write_multi(self, in_list):
+        for tag, value in in_list:
+            self.write_tag(tag, value)
 
     def check_done(self):
         """
         check_done is blocking and should be run in a separate thread
         """
         while True:
-            if self.plc.read_tag(BITFIELD) & DONE:
+            if self.plc.read_tag(DONE):
                 self.done = True
             else:
                 self.done = False
-                sleep(0.5)
+                sleep(0.1)
 
-    def place(c):
+    def wait_till_done(self):
         """
-        Call super method to get location and then send params to PLC
+        Loop until Done bit is set
         """
-        x, y, z = position = super(Controller, self).place(c)
+        while not self.done:
+            sleep(0.1)
+
+    def place(self, c):
+        """
+        Call super method to get empty location and then send params to PLC
+        """
+        self.wait_till_done()
+        x, y, z = super(Controller, self).place(c)
+        self.write_multi((XLOC, x),
+                         (YLOC, y),
+                         (ZLOC, z),
+                         (PICK_PLACE, PLACE),
+                         (START, 1))
+
+    def pick(self, c):
+        """
+        Call super method to get pick location and send params to PLC
+        """
+        self.wait_till_done()
+        x, y, z = super(Controller, self).pick(c)
+        self.write_multi((XLOC, x),
+                         (YLOC, y),
+                         (ZLOC, z),
+                         (PICK_PLACE, PICK),
+                         (START, 1))
