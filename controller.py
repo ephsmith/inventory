@@ -13,6 +13,8 @@ XLoc:         N7:10
 YLoc:         N7:11
 """
 
+DRY_RUN = 'dry-run'
+PRODUCTION = 'production'
 BITFIELD = 'B3:7'
 XLOC = 'N7:10'
 YLOC = 'N7:11'
@@ -58,29 +60,31 @@ class Simulator(object):
 
 class Controller(Inventory):
 
-    def __init__(self, ip_address=None, mode='dry-run'):
+    def __init__(self, ip_address=None, mode=DRY_RUN):
         self.ip_address = ip_address or None
         self.mode = mode
         self.done = False
 
-        if self.mode is not 'dry-run':
+        if self.mode == PRODUCTION:
             self.plc = Driver()
+            try:
+                connected = self.plc.open(self.ip_address)
+                if not connected:
+                    msg = 'Failed to connect to {}'.format(self.ip_address)
+                    raise ConnectionException(msg)
+            except ConnectionException as e:
+                print(e.msg)
         else:
             self.plc = Simulator()
-
-        try:
-            connected = self.plc.open(self.ip_address)
-            if not connected:
-                msg = 'Failed to connect to {}'.format(self.ip_address)
-                raise ConnectionException(msg)
-        except ConnectionException as e:
-            print(e.msg)
 
         self.write_tag = self.plc.write_tag
         self.read_tag = self.plc.read_tag
 
         self.done_thread = Thread(target=self.check_done)
         self.done_thread.start()
+        super(Controller, self).__init__(dimx=16,
+                                         dimy=5,
+                                         dimz=2)
 
     def write_multi(self, in_list):
         for tag, value in in_list:
@@ -90,12 +94,16 @@ class Controller(Inventory):
         """
         check_done is blocking and should be run in a separate thread
         """
-        while True:
-            if self.plc.read_tag(DONE):
-                self.done = True
-            else:
-                self.done = False
-                sleep(0.1)
+        try:
+            while True:
+                if self.plc.read_tag(DONE):
+                    self.done = True
+                else:
+                    self.done = False
+                    sleep(0.1)
+        except KeyboardInterrupt:
+            print('Done POLL method interrupted')
+            return
 
     def wait_till_done(self):
         """
@@ -110,11 +118,12 @@ class Controller(Inventory):
         """
         self.wait_till_done()
         x, y, z = super(Controller, self).place(c)
-        self.write_multi((XLOC, x),
-                         (YLOC, y),
-                         (ZLOC, z),
-                         (PICK_PLACE, PLACE),
-                         (START, 1))
+        self.write_multi([
+            (XLOC, x),
+            (YLOC, y),
+            (ZLOC, z),
+            (PICK_PLACE, PLACE),
+            (START, 1)])
 
     def pick(self, c):
         """
