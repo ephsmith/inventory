@@ -1,7 +1,6 @@
 from inventory import Inventory
 from pycomm.ab_comm.slc import Driver
 from time import sleep
-from threading import Thread
 
 """
 Project Params
@@ -80,8 +79,6 @@ class Controller(Inventory):
         self.write_tag = self.plc.write_tag
         self.read_tag = self.plc.read_tag
 
-        self.done_thread = Thread(target=self.check_done)
-        self.done_thread.start()
         super(Controller, self).__init__(dimx=16,
                                          dimy=5,
                                          dimz=2)
@@ -89,21 +86,6 @@ class Controller(Inventory):
     def write_multi(self, in_list):
         for tag, value in in_list:
             self.write_tag(tag, value)
-
-    def check_done(self):
-        """
-        check_done is blocking and should be run in a separate thread
-        """
-        try:
-            while True:
-                if self.plc.read_tag(DONE):
-                    self.done = True
-                else:
-                    self.done = False
-                    sleep(0.1)
-        except KeyboardInterrupt:
-            print('Done POLL method interrupted')
-            return
 
     def wait_till_done(self):
         """
