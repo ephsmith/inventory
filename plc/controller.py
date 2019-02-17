@@ -115,8 +115,9 @@ class Controller(Inventory):
         """
         self.wait_till_done()
         x, y, z = super(Controller, self).pick(c)
-        self.write_multi((XLOC, x),
-                         (YLOC, y),
-                         (ZLOC, z),
-                         (PICK_PLACE, PICK),
-                         (START, 1))
+        self.write_multi([
+            (XLOC, x),
+            (YLOC, y),
+            (ZLOC, z),
+            (PICK_PLACE, PICK),
+            (START, 1)])
