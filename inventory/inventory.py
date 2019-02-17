@@ -3,7 +3,7 @@ from collections import Counter
 from tabulate import tabulate
 
 
-class Inventory():
+class Inventory(object):
     """
     Inventory: class to organize inventory and inventory access methods
     """
@@ -56,7 +56,6 @@ class Inventory():
                 if len(indices) > 0:
                     index = indices[0]
                     zloc = z + 1
-                    print('Found loc: index = {}, zloc = {}'.format(index,zloc))
                     return zloc, index
         if zloc is None and index is None:
             try:
