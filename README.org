@@ -49,3 +49,13 @@ Run =plc-test= from the top-level directory /with the inventory venv activated./
 #+BEGIN_EXAMPLE
 python plc-test.py
 #+END_EXAMPLE
+
+** Test/Run Webapp
+The current state of the webapp is for development purposes only. To run the webapp, /assert that the venv is activated/ and issue the following commands /from the top-level repo dir/:
+
+#+BEGIN_SRC bash
+export FLASK_APP=webhouse.py
+flask run
+#+END_SRC
+
+Then visit =http://127.0.0.1:5000/= in a web browser.
