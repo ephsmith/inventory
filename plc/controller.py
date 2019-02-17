@@ -130,13 +130,17 @@ class Controller(Inventory):
         Call super method to get empty location and then send params to PLC
         """
         self.wait_till_done()
-        x, y, z = super(Controller, self).place(c)
-        self.write_multi([
-            (XLOC, x),
-            (YLOC, y),
-            (ZLOC, z),
-            (PICK_PLACE, PLACE),
-            (START, 1)])
+        try:
+            x, y, z = super(Controller, self).place(c)
+            self.write_multi([
+                (XLOC, x),
+                (YLOC, y),
+                (ZLOC, z),
+                (PICK_PLACE, PLACE),
+                (START, 1)])
+        except TypeError:
+            print('Inventory full!!!')
+
         print(self.inventory)
 
     def pick(self, c):
@@ -144,11 +148,16 @@ class Controller(Inventory):
         Call super method to get pick location and send params to PLC
         """
         self.wait_till_done()
-        x, y, z = super(Controller, self).pick(c)
-        self.write_multi([
-            (XLOC, x),
-            (YLOC, y),
-            (ZLOC, z),
-            (PICK_PLACE, PICK),
-            (START, 1)])
+        try:
+            x, y, z = super(Controller, self).pick(c)
+            self.write_multi([
+                (XLOC, x),
+                (YLOC, y),
+                (ZLOC, z),
+                (PICK_PLACE, PICK),
+                (START, 1)])
+        except TypeError:
+            msg = 'Attempted to pick item '
+            msg += '"{}", but none are available'.format(c)
+            print(msg)
         print(self.inventory)
