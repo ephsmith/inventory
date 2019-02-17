@@ -1,6 +1,7 @@
 from inventory import Inventory
 from pycomm.ab_comm.slc import Driver
 from time import sleep
+from functools import wraps
 
 """
 Project Params
@@ -40,20 +41,46 @@ class ConnectionException(Exception):
 
 
 class Simulator(object):
+
     def __init__(self):
         self.tags = {DONE: 1}
+        self.tag_lookup = {DONE: 'DONE',
+                           START: 'START',
+                           PICK_PLACE: 'PICK_PLACE',
+                           XLOC: 'XLOC',
+                           YLOC: 'YLOC',
+                           ZLOC: 'ZLOC',
+                           }
+
+    def tag_string(self):
+        """
+        Print a user-friendly version of tag values
+        """
+        tag_string = '{'
+        for key, val in self.tags.items():
+            tag_string += self.tag_lookup[key] + ':' + str(val) + ', '
+        tag_string += '}'
+        return tag_string
 
     def open(self, ip_address):
         return True
 
     def write_tag(self, tag, val):
         self.tags.update({tag: val})
+        print('write_tag: ' + self.tag_lookup[tag] + ': ' + str(val))
+        print('|')
+        print('---->' + self.tag_string())
 
     def read_tag(self, tag):
         try:
             val = self.tags[tag]
         except KeyError:
             val = None
+
+        print('read_tag:' + self.tag_lookup[tag])
+        print('|')
+        print('---->' + self.tag_string())
+
         return val
 
 
