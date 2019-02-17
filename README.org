@@ -1,0 +1,51 @@
+* Description
+This is a simple, Python-based inventory system that incorporates a MicroLogix PLC, a pure Python inventory database, and a Flask webapp.  The webapp is used to view, pick, and place inventory items.  The =Controller= backend leverages =pycomm= to interface the PLC and perform the necessary functions.
+
+* Installation
+
+** Configure a Python 2.7 environment
+Virtual environments are recommended. [[https://virtualenvwrapper.readthedocs.io/en/latest/][virtualenvwrapper]] is recommended.
+
+=pycomm= isn't currently Python 3 compatible. Use =virtualenvwrapper= to create a compatible virtual environment named "inventory" with the following command:
+
+#+BEGIN_EXAMPLE
+mkvirtualenv --python=python2.7 inventory
+#+END_EXAMPLE
+
+After the venv is created, =virtualenvwrapper= should activate it.  Note the prompt change to confirm.
+
+** Clone this repository:
+
+#+BEGIN_EXAMPLE
+git clone --recurse-submodules https://github.com/ephsmith/inventory.git
+#+END_EXAMPLE
+
+** Install package requirements
+Assure that the venv is activated and issue the following commands to install package requirements:
+
+#+BEGIN_EXAMPLE
+cd inventory
+pip install -r requirements.txt
+#+END_EXAMPLE
+
+** Install project packages
+
+*** Install pycomm
+#+BEGIN_EXAMPLE
+cd pycomm
+pip install -e .
+cd ..
+#+END_EXAMPLE
+
+*** Install remaining modules
+Run this command in the top-level repository dir:
+#+BEGIN_EXAMPLE
+pip install -e .
+#+END_EXAMPLE
+
+** Test installation
+Run =plc-test= from the top-level directory /with the inventory venv activated./
+
+#+BEGIN_EXAMPLE
+python plc-test.py
+#+END_EXAMPLE
