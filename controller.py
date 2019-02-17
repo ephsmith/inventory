@@ -40,17 +40,17 @@ class ConnectionException(Exception):
 
 class Simulator(object):
     def __init__(self):
-        self.tags = {BITFIELD: 8}
+        self.tags = {DONE: 1}
 
     def open():
         return True
 
-    def write_tag(self, d):
-        self.tags.update(d)
+    def write_tag(self, tag, val):
+        self.tags.update({tag: val})
 
-    def read_tag(self, s):
+    def read_tag(self, tag):
         try:
-            val = self.tags[s]
+            val = self.tags[tag]
         except KeyError:
             val = None
         return val
