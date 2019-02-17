@@ -25,7 +25,9 @@ PICK_PLACE = 'B3:7/1'
 DONE = 'B3:7/3'
 PICK = 1
 PLACE = 0
-
+DIMX = 16
+DIMY = 5
+DIMZ = 2
 
 class ConnectionException(Exception):
     """
@@ -106,9 +108,9 @@ class Controller(Inventory):
         self.write_tag = self.plc.write_tag
         self.read_tag = self.plc.read_tag
 
-        super(Controller, self).__init__(dimx=16,
-                                         dimy=5,
-                                         dimz=2)
+        super(Controller, self).__init__(dimx=DIMX,
+                                         dimy=DIMY,
+                                         dimz=DIMZ)
 
     def write_multi(self, in_list):
         for tag, value in in_list:
