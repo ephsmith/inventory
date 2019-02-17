@@ -43,7 +43,7 @@ class Simulator(object):
     def __init__(self):
         self.tags = {DONE: 1}
 
-    def open():
+    def open(self, ip_address):
         return True
 
     def write_tag(self, tag, val):
@@ -66,15 +66,15 @@ class Controller(Inventory):
 
         if self.mode == PRODUCTION:
             self.plc = Driver()
-            try:
-                connected = self.plc.open(self.ip_address)
-                if not connected:
-                    msg = 'Failed to connect to {}'.format(self.ip_address)
-                    raise ConnectionException(msg)
-            except ConnectionException as e:
-                print(e.msg)
         else:
             self.plc = Simulator()
+        try:
+            connected = self.plc.open(self.ip_address)
+            if not connected:
+                msg = 'Failed to connect to {}'.format(self.ip_address)
+                raise ConnectionException(msg)
+        except ConnectionException as e:
+            print(e.msg)
 
         self.write_tag = self.plc.write_tag
         self.read_tag = self.plc.read_tag
