@@ -137,6 +137,7 @@ class Controller(Inventory):
             (ZLOC, z),
             (PICK_PLACE, PLACE),
             (START, 1)])
+        print(self.inventory)
 
     def pick(self, c):
         """
@@ -150,3 +151,4 @@ class Controller(Inventory):
             (ZLOC, z),
             (PICK_PLACE, PICK),
             (START, 1)])
+        print(self.inventory)
