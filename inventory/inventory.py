@@ -4,9 +4,22 @@ from tabulate import tabulate
 
 
 class Inventory(object):
+    """Inventory - class to organize inventory and inventory access methods
+
+    Attributes:
+        DIMX (int): count of bins in the x-dimension
+        DIMY (int): count of bins in the y-dimension
+        DIMZ (int): count of bins in the z-dimension
+        NUMBINS (int): total number of bins
+        inventory (Counter): counts of all unique inventory items
+        bins (list): 3 dimensional list containing all items
+
+    Args:
+        dimx (int): desired number of x bins
+        dimy (int): desired number of y bins
+        dimz (int): desired number of z bins
     """
-    Inventory: class to organize inventory and inventory access methods
-    """
+
     def __init__(self, dimx=16, dimy=5, dimz=2):
         self.DIMX = dimx
         self.DIMY = dimy
@@ -17,21 +30,43 @@ class Inventory(object):
                      for z in range(dimz)]
 
     def xy_to_index(self, x, y):
-        """ return the bin index for coord (x,y) """
+        """ return the bin index for coord (x,y)
+        Args:
+            x (int): the physical x coordinate related to a bin
+            y (int): the physical y coordinate related to a bin
+
+        Returns:
+            linear list index related to the x,y location
+        """
         return np.ravel_multi_index([x, y],
                                     [self.DIMX, self.DIMY])
 
     def index_to_xy(self, idx):
-        """ return the x,y coord for the linear index idx"""
+        """ return the x,y coord for the linear index idx
+        Args:
+            linear list index related to the x,y location
+
+        Returns:
+            A tuple (x,y) containing the x,y location related index
+        """
         return np.unravel_index(idx,
                                 [self.DIMX, self.DIMY])
 
     def find_empty(self, c):
-        """
-        find the first empty bin for character c with the priority
-        that like like items be stored at a higher z-depth.
+        """find the first empty bin for character c
 
-        Fill priority is low to high
+        Note:
+            with the priority that like like items be stored
+            at a higher z-depth. Therefore, when placing characters,
+            a search is made to locate a similar item within the
+            inventory that also has an empty z bin above it.
+
+        Args:
+            c (chr): the inventory item to be placed.
+
+        Returns:
+            Returns a tuple (zloc, index) where zloc is the z-coord
+            and index is the linear list index for the item.
         """
         indices = []
         zloc = None
@@ -57,8 +92,13 @@ class Inventory(object):
         return zloc, index
 
     def find_top(self, c):
-        """
-        find the topmost character c
+        """ find the topmost character c in the inventory
+        Args:
+            c (chr): the inventory item to be placed.
+
+        Returns:
+            Returns a tuple (zloc, index) where zloc is the z-coord
+            and index is the linear list index for the item.
         """
         zloc = None
         index = None
@@ -76,11 +116,13 @@ class Inventory(object):
         return zloc, index
 
     def place(self, c):
-        """
-        Add character c to the inventory and find the first
-        available location. Return the x,y,z location as a tuple
+        """ Add character c to the inventory
 
-        Return None if unsuccessful
+        Args:
+            c (chr): the character item to be placed
+
+        Returns:
+            None if unsuccessful.  The (x,y,z) tuple otherwise
         """
         z, index = self.find_empty(c)
 
@@ -91,11 +133,13 @@ class Inventory(object):
             return (xy[0], xy[1], z)
 
     def pick(self, c):
-        """
-        Find and remove the first available character c. Return
-        x,y,z location as a tuple.
+        """ Find and remove the first available character c.
 
-        Return None if unsuccessful
+        Args:
+            c (chr): the character item to be placed
+
+        Returns:
+            None if unsuccessful.  The (x,y,z) tuple otherwise
         """
         if self.inventory[c] == 0:
             return None
