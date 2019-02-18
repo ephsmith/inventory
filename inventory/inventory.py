@@ -127,7 +127,7 @@ class Inventory(object):
         z, index = self.find_empty(c)
 
         if z is not None and index is not None:
-            self.bins[z].insert(index, c)
+            self.bins[z][index] = c
             self.inventory.update(c)
             xy = self.index_to_xy(index)
             return (xy[0], xy[1], z)
