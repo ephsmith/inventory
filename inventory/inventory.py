@@ -155,18 +155,22 @@ class Inventory(object):
         """ Return the number of c's in inventory"""
         return self.inventory[c]
 
-    def print_inventory(self):
+    def print_inventory(self, tablefmt='fancy_grid'):
         """ Print the inventory in tabular form"""
         print(self.__str__())
 
         header = [x for x in range(self.DIMX)]
         rowids = [y for y in range(self.DIMY)]
+        tables = []
         for z in range(self.DIMZ):
             print("\nZ = {}".format(z))
             rows = [[self.bins[z][self.xy_to_index(x, y)]
                      for x in range(self.DIMX)] for y in range(self.DIMY)]
-            print(tabulate(rows, headers=header,
-                           showindex=rowids, tablefmt="fancy_grid"))
+            table = tabulate(rows, headers=header,
+                             showindex=rowids, tablefmt=tablefmt)
+            print(table)
+            tables.append(table)
+        return tables
 
     def __str__(self):
         header = ['part', 'count']
