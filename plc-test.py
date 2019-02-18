@@ -2,15 +2,25 @@ from time import sleep
 import plc
 from plc import Controller
 
+initial = 'abcdefghijklmnopqrstuv' * 2
+first_pick = 'abc'
+second_place = 'abc'
+
+
 w = Controller(mode=plc.DRY_RUN)
 
-for c in 'aabbccddeeffgg':
+for c in initial:
     w.place(c)
 
 w.print_inventory()
 
-for c in 'abcdefg':
+for c in first_pick:
     w.pick(c)
+
+w.print_inventory()
+
+for c in second_place:
+    w.place(c)
 
 w.print_inventory()
 
