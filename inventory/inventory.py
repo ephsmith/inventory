@@ -26,16 +26,6 @@ class Inventory(object):
         return np.unravel_index(idx,
                                 [self.DIMX, self.DIMY])
 
-    def xyz_to_index(self, x, y, z):
-        """ return the bin index for coord (x,y,z) """
-        return np.ravel_multi_index([x, y, z],
-                                    [self.DIMX, self.DIMY, self.DIMZ])
-
-    def index_to_xyz(self, idx):
-        """ return the xyz coord for the linear index idx"""
-        return np.unravel_index(idx,
-                                [self.DIMX, self.DIMY, self.DIMZ])
-
     def find_empty(self, c):
         """
         find the first empty bin for character c with the priority
@@ -141,9 +131,3 @@ class Inventory(object):
 
     def __repr__(self):
         return self.__str__()
-
-
-# TEST
-# w = Inventory()
-# for c in 'abcasdflkajsdfoiahsdfoiauhwerljakhsdflkjahetoihasdf':
-#     w.place(c)
